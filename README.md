@@ -1,0 +1,1 @@
+# Assistente-Virtual-no-WhatsApp-com-N8N-Google-Sheets-e-Gemini-AI
