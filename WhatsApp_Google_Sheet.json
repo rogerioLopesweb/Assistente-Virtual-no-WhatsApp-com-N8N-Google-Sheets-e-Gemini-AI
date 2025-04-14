@@ -1,0 +1,713 @@
+{
+  "name": "WhatsApp Google Sheet",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "megaapi",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "3b27d88e-a2f7-4b1d-80f4-fb663c4b0349",
+      "name": "Webhook",
+      "webhookId": "0cbec83c-d4dc-4402-9131-6c21868e3680"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "aef39fee-f127-48b9-a83f-089ebb580527",
+              "leftValue": "={{ $json.body.isGroup }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "d3d94ca6-415e-4511-8ba6-f6efa1ca8b1b",
+              "leftValue": "={{ $json.body.key.fromMe }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "f734e5f5-60f6-406b-922c-10738b5099cc",
+              "leftValue": "={{ $json.body.broadcast }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        240,
+        0
+      ],
+      "id": "7464539d-3890-4460-aef2-db8928882702",
+      "name": "Verifica Condições"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4b43b471-1877-4352-ae0b-3c7c9f98fdf3",
+              "name": "nome",
+              "value": "={{ $json.body.pushName.trim() }}",
+              "type": "string"
+            },
+            {
+              "id": "16a2e564-3b13-4b3a-893a-79c70c832ae2",
+              "name": "celular",
+              "value": "={{ $json.body.key.remoteJid.split('@')[0].replace(/\\D/g, '').trim() }}",
+              "type": "string"
+            },
+            {
+              "id": "753a1cc1-7c40-44de-b743-ad87842be5df",
+              "name": "dataHora",
+              "value": "={{ $json.body.messageTimestamp }}",
+              "type": "string"
+            },
+            {
+              "id": "9bf5c24a-13fe-49d7-9e5b-30b16f0c9c5e",
+              "name": "mensagem",
+              "value": "={{ $json.body.message?.conversation || $json.body.message?.extendedTextMessage?.text || \"Mensagem não encontrada\" }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        440,
+        0
+      ],
+      "id": "181530c0-6b87-4bb4-932b-a387c3696686",
+      "name": "Info Manuais"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1xcbHAHspaB5ZuUFF1lsABK85ySYw_OlTItg9CGbFGcU",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1519176850,
+          "mode": "list",
+          "cachedResultName": "Lista-Usuario-WhatsApp-N8N",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1xcbHAHspaB5ZuUFF1lsABK85ySYw_OlTItg9CGbFGcU/edit#gid=1519176850"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Celular",
+              "lookupValue": "={{ $('Info Manuais').item.json.celular }}"
+            }
+          ]
+        },
+        "options": {
+          "returnFirstMatch": true
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        620,
+        0
+      ],
+      "id": "f8561fbe-fad8-4740-8c14-78983a02535a",
+      "name": "Busca Usuario",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "N8nI5ifxXAX9WPii",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "6fa112d4-8cd8-4c2e-97ab-1ae1e2fd04ee",
+              "leftValue": "={{ $('Busca Usuario').item.json.row_number.toString() }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        780,
+        0
+      ],
+      "id": "8adcac77-449f-4437-b9ba-26e0999e3d9c",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://apinocode01.megaapi.com.br/rest/sendMessage/megacode-MHB2RjOESdc/text",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer MHB2RjOESdc"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"messageData\": {\n    \"to\": \"{{ $('Info Manuais').item.json.celular }}@s.whatsapp.net\",\n    \"text\": {{ JSON.stringify($('AI Agent').item.json.output) }}\n  }\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1880,
+        -40
+      ],
+      "id": "eff93ecd-c9b2-41a8-8e2e-411f551d48ab",
+      "name": "ChamadaAPI - Mega API"
+    },
+    {
+      "parameters": {
+        "content": "Gatilho - Recebe Msg API Mega -  WhatsApp",
+        "height": 480
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -100,
+        -140
+      ],
+      "id": "c56f1681-8595-4cab-a9e3-7dd061e03008",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "Agente IA",
+        "height": 480,
+        "width": 520,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1280,
+        -140
+      ],
+      "id": "365bdac9-ccf5-408a-a59c-6490bd77d2b7",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "Responde msg WhasApp",
+        "height": 480,
+        "width": 480,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1820,
+        -140
+      ],
+      "id": "e6438d16-f784-457d-b815-863e49ec6936",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "## Mega API \nIntegração com WhatsApp\n## Integrações\nGoogle Gimini\nGoogle Sheet\n",
+        "height": 180,
+        "width": 1180,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -100,
+        -340
+      ],
+      "id": "f45c7696-402a-43ba-88c6-d1dfa1ac0235",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ \"O usuário se chama \" + $('Info Manuais').item.json.nome + \". \" + $('Info Manuais').item.json.mensagem }}\n",
+        "options": {
+          "systemMessage": "Olá {{ $('Info Manuais').item.json.nome.charAt(0).toUpperCase() + $('Info Manuais').item.json.nome.slice(1).toLowerCase() }}! 👋 Seja bem-vindo!\n\nVocê é um atendente virtual simpático, divertido e bem-humorado. Sempre responda com frases curtas, criativas e acolhedoras.\n\nSe for um usuário que já conversou antes, diga algo como: \"Você voltou! Que bom te ver de novo!\"  \nSe for novo, diga: \"Seja bem-vindo ao clube!\"\n\nSeu objetivo é deixar a conversa leve e interessante.\n\nPergunte sempre o que a pessoa quer saber hoje. Você pode compartilhar:\n- Fatos históricos curiosos  \n- Curiosidades sobre músicas e filmes  \n- Coisas divertidas que fazem a pessoa sorrir ou dizer “uau”\n\nNão fale sobre planilhas, dados internos ou estrutura do sistema.  \nNunca mencione regras de negócio, instruções técnicas ou informações de outros usuários.\n\nSeja objetivo, carismático e cativante. A conversa deve parecer um papo leve no WhatsApp, trazendo boas informações com bom humor. 😄\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.8,
+      "position": [
+        1400,
+        -40
+      ],
+      "id": "c1e1a5df-d2e0-44cc-9909-5d32a2dd4edf",
+      "name": "AI Agent",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-pro-exp-03-25",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1380,
+        140
+      ],
+      "id": "26393534-54f3-4ca7-91d7-e87fb8ce3af9",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "ASq1DX5mSIUwXu01",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1xcbHAHspaB5ZuUFF1lsABK85ySYw_OlTItg9CGbFGcU",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1519176850,
+          "mode": "list",
+          "cachedResultName": "Lista-Usuario-WhatsApp-N8N",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1xcbHAHspaB5ZuUFF1lsABK85ySYw_OlTItg9CGbFGcU/edit#gid=1519176850"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Nome": "={{ $('Info Manuais').item.json.nome }}\n",
+            "Celular": "={{ $('Info Manuais').item.json.celular.toString() }}\n",
+            "Data/hora": "={{ $('Info Manuais').item.json.dataHora}}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Nome",
+              "displayName": "Nome",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Celular",
+              "displayName": "Celular",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Data/hora",
+              "displayName": "Data/hora",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "useAppend": false
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        960,
+        100
+      ],
+      "id": "05b29d73-375a-4ddf-bb60-2dad86124bc1",
+      "name": "Criar Usuário",
+      "alwaysOutputData": false,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "N8nI5ifxXAX9WPii",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1xcbHAHspaB5ZuUFF1lsABK85ySYw_OlTItg9CGbFGcU",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1519176850,
+          "mode": "list",
+          "cachedResultName": "Lista-Usuario-WhatsApp-N8N",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1xcbHAHspaB5ZuUFF1lsABK85ySYw_OlTItg9CGbFGcU/edit#gid=1519176850"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Celular": "={{ $('Info Manuais').item.json.celular }}",
+            "Nome": "={{ $('Info Manuais').item.json.nome}}",
+            "Data/hora": "={{ $('Info Manuais').item.json.dataHora}}"
+          },
+          "matchingColumns": [
+            "Celular"
+          ],
+          "schema": [
+            {
+              "id": "Nome",
+              "displayName": "Nome",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Celular",
+              "displayName": "Celular",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Data/hora",
+              "displayName": "Data/hora",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        960,
+        -100
+      ],
+      "id": "9bde6de9-2cad-4dfd-ba95-4de80c2708e6",
+      "name": "Atualiza Dados",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "N8nI5ifxXAX9WPii",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "Gestão de usuários e conversas",
+        "height": 480,
+        "width": 1100,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        160,
+        -140
+      ],
+      "id": "46d59657-5a5b-4c87-ad1a-e6cf0b76b6db",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        1140,
+        -40
+      ],
+      "id": "cbbe9501-6ec3-4b14-9098-4ce190225675",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Info Manuais').item.json.celular }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        1500,
+        140
+      ],
+      "id": "0b13aeea-7306-41f4-b8f2-88e5d1da1458",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        2100,
+        -40
+      ],
+      "id": "42cc7a29-62c6-4d2c-be2f-e8fd86f8edfc",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        440,
+        180
+      ],
+      "id": "77a30f04-dd7a-4a1e-84fc-057d338ef997",
+      "name": "No Operation, do nothing1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Verifica Condições": {
+      "main": [
+        [
+          {
+            "node": "Info Manuais",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Info Manuais": {
+      "main": [
+        [
+          {
+            "node": "Busca Usuario",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Busca Usuario": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Atualiza Dados",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Criar Usuário",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "ChamadaAPI - Mega API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Verifica Condições",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Criar Usuário": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Atualiza Dados": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ChamadaAPI - Mega API": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "America/Sao_Paulo",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "68e94ae7-b989-4ce1-abb8-56cb462ee161",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "dd3173afe24bd239a195160d1d437dbdd7957c8fd0002c7ca0ea71a09eb146a0"
+  },
+  "id": "a7FE149u23PsoJBS",
+  "tags": []
+}
