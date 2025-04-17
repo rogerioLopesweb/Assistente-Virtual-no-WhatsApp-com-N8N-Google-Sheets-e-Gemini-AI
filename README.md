@@ -3,6 +3,8 @@
 Este projeto é um fluxo automatizado desenvolvido no **n8n**, que transforma o WhatsApp em um **assistente virtual inteligente, criativo e multimodal**, capaz de entender e responder mensagens de texto, voz e imagem com IA generativa. Utiliza integração com **Supabase, Google Sheets, Mega API, OpenAI e Gemini AI**, proporcionando uma experiência automatizada, personalizada e interativa via WhatsApp.
 
 ---
+![image](https://github.com/user-attachments/assets/358ffa9d-3757-4688-be04-22e73130edf0)
+
 
 ## 🚀 Funcionalidades
 
