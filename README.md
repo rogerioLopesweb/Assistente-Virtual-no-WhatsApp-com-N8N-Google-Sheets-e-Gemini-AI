@@ -1,57 +1,76 @@
-# 🤖 Assistente Virtual no WhatsApp com N8N, Google Sheets e Gemini AI
+# 🤖 Assistente Virtual Multimodal no WhatsApp com n8n, Supabase, Google Sheets, Mega API, OpenAI e Gemini
 
-Este projeto é um fluxo desenvolvido no [N8N](https://n8n.io/) que transforma o WhatsApp em um assistente virtual inteligente, criativo e carismático. Utilizando integração com **Google Sheets**, **Mega API** e **Google Gemini AI**, ele oferece uma experiência automatizada e humanizada de interação com usuários via mensagens no WhatsApp.
+Este projeto é um fluxo automatizado desenvolvido no **n8n**, que transforma o WhatsApp em um **assistente virtual inteligente, criativo e multimodal**, capaz de entender e responder mensagens de texto, voz e imagem com IA generativa. Utiliza integração com **Supabase, Google Sheets, Mega API, OpenAI e Gemini AI**, proporcionando uma experiência automatizada, personalizada e interativa via WhatsApp.
 
 ---
 
 ## 🚀 Funcionalidades
 
-- 📥 **Recebimento de mensagens via Webhook**
-- 🔎 **Validação de mensagens (exclui grupos, automatizadas e mensagens do próprio bot)**
-- 📋 **Extração e registro de informações do usuário (nome, número, horário, mensagem)**
-- 📊 **Integração com Google Sheets para busca e atualização de cadastro**
-- 🤖 **Resposta personalizada com IA usando Google Gemini**
-- 📤 **Envio de mensagens via Mega API diretamente no WhatsApp**
+- 📥 Recebimento de mensagens via Webhook (MegaAPI)
+- 🧹 Filtro inicial para ignorar grupos, automações e mensagens do próprio bot
+- 📋 Extração de dados do usuário: nome, telefone, tipo e conteúdo da mensagem
+- 🧠 Identificação do tipo da mensagem: texto, imagem, áudio ou vídeo
+- 📊 Consulta e registro de clientes via **Supabase**
+- 📝 Atualização ou criação de cadastro automaticamente
+- 🤖 Resposta inteligente com **Google Gemini** e **OpenAI (GPT-3.5 e GPT-4o)**
+- 🖼️ Análise de imagem via OpenAI Vision (GPT-4o)
+- 🔊 Transcrição de áudio com **Whisper (OpenAI)**
+- 🎙️ Conversão de texto para áudio com IA (TTS) + envio em ptt
+- 📤 Respostas multimodais (texto ou áudio) via **MegaAPI WhatsApp**
+- 🧠 Contexto conversacional com memória por número de telefone
 
 ---
 
-## 📌 Como Funciona
+## 🧠 Como Funciona – Etapas do Fluxo
 
-1. **Webhook**
-   - Captura mensagens recebidas via API do WhatsApp.
+1. **[Webhook]**  
+   Recebe mensagens do WhatsApp via MegaAPI.
 
-2. **Validação de Condições**
-   - Verifica se a mensagem não é de grupo, broadcast ou enviada pelo próprio bot.
+2. **[Validação de Mensagem]**  
+   Filtra mensagens de grupos, automações e o próprio bot.
 
-3. **Extração de Informações**
-   - Nome, número de celular, horário e texto da mensagem são processados.
+3. **[Extração de Dados]**  
+   Nome do usuário, telefone, conteúdo e tipo da mensagem.
 
-4. **Consulta e Atualização no Google Sheets**
-   - O número é usado como identificador para buscar e atualizar registros na planilha.
+4. **[Consulta Supabase]**  
+   Verifica se o número está cadastrado. Se não estiver, cria automaticamente.
 
-5. **IA com Gemini**
-   - O texto do usuário é processado e respondido com criatividade e bom humor.
+5. **[Classificação da Mensagem]**  
+   Identifica se é texto, imagem, áudio ou vídeo e direciona o tratamento.
 
-6. **Envio de Mensagem**
-   - A resposta gerada é enviada de volta via Mega API no WhatsApp.
+6. **[Processamento da Entrada]**  
+   - **Texto:** enviado diretamente para IA  
+   - **Imagem:** convertida, analisada e interpretada com IA  
+   - **Áudio:** descriptografado, convertido, transcrito com IA
+
+7. **[Geração de Resposta]**  
+   IA responde com humor, persuasão ou criatividade, com base em prompt pré-definido.
+
+8. **[Resposta Final]**  
+   Envio por texto ou por áudio (ptt gerado com TTS e formatado em base64)
 
 ---
 
 ## 🛠️ Tecnologias Utilizadas
 
-- [N8N](https://n8n.io/) (Automação no-code)
-- [Google Sheets](https://www.google.com/sheets/about/)
-- [Mega API WhatsApp](https://megaapi.com.br/)
-- [Google Gemini (IA generativa)](https://deepmind.google/technologies/gemini/)
+- **n8n** – automação visual low-code  
+- **Supabase** – banco de dados de usuários  
+- **Google Sheets** – alternativa leve de consulta e histórico  
+- **MegaAPI WhatsApp** – recepção e envio de mensagens  
+- **Google Gemini** – IA generativa para texto e imagem  
+- **OpenAI (GPT + Whisper)** – transcrição, texto e imagem  
+- **OpenAI Vision (GPT-4o)** – análise de imagem multimodal  
+- **LangChain Memory** – para manter contexto de conversas  
 
 ---
 
-## 🧠 Fluxo Resumido
+## 🧩 Fluxo Visão Geral
 
-```plaintext
-[Webhook] ➝ [Validação de mensagem] ➝ [Extração de dados]
-        ➝ [Consulta no Google Sheets]
-          ↳ (Novo usuário) ➝ [Cria registro]
-          ↳ (Existente) ➝ [Atualiza registro]
-        ➝ [Envia dados para IA Gemini]
-        ➝ [Recebe resposta] ➝ [Envia via Mega API]
+```
+[Webhook WhatsApp] ➝ [Validação] ➝ [Consulta Supabase]  
+     ↳ [Novo usuário?] ➝ [Criação automática]  
+     ↳ [Mensagem Texto] ➝ [Gemini IA → Texto]  
+     ↳ [Mensagem Imagem] ➝ [Download → Análise com GPT-4o]  
+     ↳ [Mensagem Áudio] ➝ [Download → Transcrição (Whisper)]  
+     ➝ [Resposta IA → Texto ou Áudio] ➝ [Envio via MegaAPI]
+```
